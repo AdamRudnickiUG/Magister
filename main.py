@@ -13,21 +13,22 @@ import networkx as nx
 from itertools import combinations, chain
 import igraph as ig
 import pygad
+from datetime import datetime
 
 from deap import base, creator, tools, algorithms
 
 plt.rcParams["figure.figsize"] = (4, 3)
 # 43-46
-size = 10
-red_requirement = 5
-black_requirement = 5
+size = 7
+red_requirement = 3
+black_requirement = 4
 vert_amount = int((size * (size - 1)) / 2)
 
 # === CONFIG ===
 POP_SIZE = 100
 GENERATIONS = 100
 CXPB = 0.5  # Crossover probability
-MUTPB = 0.25  # Mutation probability
+MUTPB = 0.35  # Mutation probability
 
 
 #########################################################################
@@ -42,8 +43,9 @@ def binatodeci(binary):
 
 
 #------------------------------------------------------------------------
-def extract_subgraphs(G, size):
-    node_combinations = list(chain.from_iterable(combinations(G.nodes, r) for r in range(2, size + 1)))
+def extract_subgraphs(G, min_size, max_size):
+    node_combinations = list(chain.from_iterable(combinations(G.nodes, r) for r in range(min_size, max_size)))
+    # node_combinations = list(chain.from_iterable(combinations(G.nodes, r) for r in range(2, min_size + 1)))
 
     # Generate subgraphs
     subgraphs = [G.subgraph(n).copy() for n in node_combinations]
@@ -135,53 +137,56 @@ def graph_gen(vert_amount):
 
 #------------------------------------------------------------------------
 def graph_validator(tested_edges, required_size):
-    G = nx.Graph()
-    G.add_nodes_from((lambda i: list(range(0, i)))(required_size))
+    score = [0.0, None]
 
+    G = nx.Graph()
+    G.add_nodes_from((lambda i: list(range(0, i)))(size))
     G.add_edges_from(tested_edges)
 
-    subgraphs = extract_subgraphs(G, required_size)
+    subgraphs = extract_subgraphs(G, 2, size)
+    # subgraphs = extract_subgraphs(G, required_size, size)
 
-    max_length = [0.0, None]
+
+    biggest_subgraph = nx.Graph()
+    max_found_size = 0
 
     for subgraph in subgraphs:
         if is_complete_graph(subgraph):
-            if len(subgraph) == required_size:
-                return [1.0, subgraph]
-            else:
-                if len(subgraph) > max_length[0]:
-                    max_length = [len(subgraph), subgraph]
+            if len(subgraph) > max_found_size:
+                print(len(subgraph))
+                max_found_size = len(subgraph)
+                biggest_subgraph = subgraph
 
-    if len(tested_edges) < required_size:
-        return [pow(max_length[0] / required_size, 2) * len(tested_edges) / required_size, max_length[1]]
+    if max_found_size < required_size:
+        score[0] = 1.0
     else:
-        return [pow(max_length[0] / required_size, 2), max_length[1]]
+        score[0] = required_size/(max_found_size + 1)
+
+    score[1] = biggest_subgraph
+    return score
 
 
 #------------------------------------------------------------------------
 def graph_validator_noGraph(tested_edges, required_size):
-    score = 0.0
+    score = [0.0,]
     G = nx.Graph()
     G.add_nodes_from((lambda i: list(range(0, i)))(required_size))
 
     G.add_edges_from(tested_edges)
 
-    subgraphs = extract_subgraphs(G, required_size)
+    subgraphs = extract_subgraphs(G, required_size, G.size())
 
-    max_length = 0.0
+    max_found_size = 0.0
 
     for subgraph in subgraphs:
         if is_complete_graph(subgraph):
-            if len(subgraph) == required_size:
-                score = 1.0
-            else:
-                if len(subgraph) > max_length:
-                    max_length = len(subgraph)
+            if len(subgraph) > max_found_size:
+                max_found_size = len(subgraph)
 
-    if len(tested_edges) < required_size:
-        score = (pow(max_length / required_size, 2) * len(tested_edges)) / required_size
+    if max_found_size < required_size:
+        score[0] = 1.0
     else:
-        score = [pow(max_length / required_size, 2)]
+        score[0] = pow(required_size/(max_found_size + 1), 2)
 
     return score
 
@@ -189,85 +194,130 @@ def graph_validator_noGraph(tested_edges, required_size):
 #------------------------------------------------------------------------
 def fitness_fn(test_subject):
     black_verts, red_verts = translate_vertices(test_subject, vert_amount)
+
+    # TODO : Simple foundSize/requiredSize promotes smaller requirements
     black_result = graph_validator_noGraph(black_verts, black_requirement)
     red_result = graph_validator_noGraph(red_verts, red_requirement)
-
-    black_result[0] = black_result[0] * (black_requirement / (black_requirement+red_requirement))
-    black_result[0] = black_result[0] * (red_requirement / (red_requirement + black_requirement))
 
     return (black_result[0] + red_result[0],)
 
 
 #------------------------------------------------------------------------
 def run_ga():
-    population = toolbox.population(n=POP_SIZE)
-    algorithms.eaSimple(population, toolbox, cxpb=CXPB, mutpb=MUTPB, ngen=GENERATIONS, verbose=True)
+    return evolve_and_track(POP_SIZE, toolbox, cxpb=CXPB, mutpb=MUTPB, ngen=GENERATIONS)
+
+
+#------------------------------------------------------------------------
+def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
+    population = toolbox.population(n=pop_size)
+    current_time = datetime.now()
+    alg_start_time = time.time()
+
+    current_time_str = current_time.strftime("%Y-%H-%M")
+    with open(f'{current_time_str}_results.txt', 'a') as file:
+        # Evaluate initial population
+        fitnesses = list(map(toolbox.evaluate, population))
+        for ind, fit in zip(population, fitnesses):
+            ind.fitness.values = fit
+
+
+        for gen in range(ngen):
+            start_time = time.time()
+            # Variation: crossover and mutation
+            offspring = algorithms.varAnd(population, toolbox, cxpb, mutpb)
+
+            # Evaluate invalid offspring
+            invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+            fitnesses = list(map(toolbox.evaluate, invalid_ind))
+            for ind, fit in zip(invalid_ind, fitnesses):
+                ind.fitness.values = fit
+
+            # Selection
+            population = toolbox.select(offspring, k=len(population))
+
+            # Print best of current generation
+            best = tools.selBest(population, k=1)[0]
+
+            elapsed_time = time.time() - start_time
+
+            minutes = int(elapsed_time // 60)
+            seconds = int(elapsed_time % 60)
+            milliseconds = int((elapsed_time % 1) * 1000)
+
+            formatted_time = f"{minutes:02}:{seconds:02}:{milliseconds:03}"
+            string_output = f"Generation {gen + 1}: Best = {binatodeci(best)}, Fitness = {best.fitness.values[0]}\nGeneration time: {formatted_time}"
+
+            print(string_output)
+            file.write(string_output)
+
+
+            if best.fitness.values[0] == 2.0:
+                elapsed_time = time.time() - alg_start_time
+
+                minutes = int(elapsed_time // 60)
+                seconds = int(elapsed_time % 60)
+                milliseconds = int((elapsed_time % 1) * 1000)
+
+                formatted_time = f"{minutes:02}:{seconds:02}:{milliseconds:03}"
+
+                file.write(f"\nGeneration {gen + 1} achieved success.\nBest = {binatodeci(best)}\nRaw code: {best}\nElapsed time total: {formatted_time}")
+                break
+
     top_ind = tools.selBest(population, k=1)[0]
-    return top_ind, fitness_fn(top_ind)
+    return top_ind, toolbox.evaluate(top_ind)
+
+#------------------------------------------------------------------------
+def draw_graphs_from_index(raw_vertices, vert_amount):
+    black_edges, red_edges = translate_vertices(raw_vertices, vert_amount)
+
+    if black_edges is not None and red_edges is not None:
+        graphId = binatodeci(raw_vertices)
+        black_result = graph_validator(black_edges, black_requirement)
+        red_result = graph_validator(red_edges, red_requirement)
+
+        black_graph = nx.generators.empty_graph(size)
+        black_graph.add_edges_from(black_edges)
+        red_graph = nx.generators.empty_graph(size)
+        red_graph.add_edges_from(red_edges)
+
+        draw_overlay_graph(graphId, black_graph, black_result[1], 0)
+        draw_overlay_graph(graphId, red_graph, red_result[1], 1)
+        draw_final_graph(graphId, nx.complete_graph(size), black_result[1], red_result[1])
+        print("black result:", black_result[0])
+        print("red result:", red_result[0])
 
 
 #------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    # === SETUP DEAP ===
-    random.seed(time.time())
-
-    if not hasattr(creator, "FitnessMax"):
-        creator.create("FitnessMax", base.Fitness, weights=(1.0,))
-    if not hasattr(creator, "Individual"):
-        creator.create("Individual", list, fitness=creator.FitnessMax)
-
-    toolbox = base.Toolbox()
-    toolbox.register("attr_bool", random.randint, 0, 1)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, vert_amount)
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
-    toolbox.register("evaluate", fitness_fn)
-    toolbox.register("mate", tools.cxOnePoint)
-    toolbox.register("mutate", tools.mutFlipBit, indpb=1.0 / vert_amount)
-    toolbox.register("select", tools.selTournament, tournsize=3)
-
-
+    TEMPORARY_PRINTING_BOOLEAN = False
     # 0 = black, 1 = red
-    if red_requirement + black_requirement > int(size * (size - 1) / 2):
-        print("Invalid - not enough edges in this size of graph")
-
+    if TEMPORARY_PRINTING_BOOLEAN:
+        raw_vertices = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0,
+                        0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0]
+        draw_graphs_from_index(raw_vertices, vert_amount)
 
     else:
+        # === SETUP DEAP ===
+        random.seed()
+
+        if not hasattr(creator, "FitnessMax"):
+            creator.create("FitnessMax", base.Fitness, weights=(1.0,))
+        if not hasattr(creator, "Individual"):
+            creator.create("Individual", list, fitness=creator.FitnessMax)
+
+        toolbox = base.Toolbox()
+        toolbox.register("attr_bool", random.randint, 0, 1)
+        toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, vert_amount)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
+        toolbox.register("evaluate", fitness_fn)
+        toolbox.register("mate", tools.cxOnePoint)
+        toolbox.register("mutate", tools.mutFlipBit, indpb=1.0 / vert_amount)
+        toolbox.register("select", tools.selTournament, tournsize=3)
+
         best_graph, best_graph_score = run_ga()
 
         print("Best graph score: ", best_graph_score, "\n", "best graph index: ", best_graph)
-        # raw_vertices = graph_gen(vert_amount)
-        # raw_vertices = [1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1,
-        #  0, 0, 1, 0, 1, 0, 1, 0]
 
-        # black_edges, red_edges = translate_vertices(raw_vertices, vert_amount)
-        #
-        #
-        # if black_edges is not None and red_edges is not None:
-        #     graphId = binatodeci(raw_vertices)
-        #
-        #     black_result = graph_validator(black_edges, black_requirement)
-        #     red_result = graph_validator(red_edges, red_requirement)
-        #
-        #     # total_result =
-        #
-        #     # if black_result[0] > 0.0 and red_result[0] > 0.0:
-        #     black_graph = nx.generators.empty_graph(size)
-        #     black_graph.add_edges_from(black_edges)
-        #
-        #     red_graph = nx.generators.empty_graph(size)
-        #     red_graph.add_edges_from(red_edges)
-        #
-        #     draw_overlay_graph(graphId, black_graph, black_result[1], 0)
-        #     draw_overlay_graph(graphId, red_graph, red_result[1], 1)
-        #     draw_final_graph(graphId, nx.complete_graph(size), black_result[1], red_result[1])
-        #
-        #     print("black result:", black_result[0])
-        #     print("red result:", red_result[0])
-        # # else:
-        # #     print("Monochromatic graph generated")
-
-# 0.790107709750567,
-# 0.8321995464852608,
-# 0.8321995464852608,
+        draw_graphs_from_index(best_graph, vert_amount)
