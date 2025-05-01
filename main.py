@@ -1,6 +1,7 @@
 import random
 import time
-
+import os
+import shutil
 import networkx.algorithms.clique
 import rustworkx as rx
 import rustworkx.generators as generators
@@ -19,26 +20,65 @@ from deap import base, creator, tools, algorithms
 
 plt.rcParams["figure.figsize"] = (4, 3)
 # 43-46
-size = 7
-red_requirement = 3
+size = 15
+red_requirement = 5
 black_requirement = 4
 vert_amount = int((size * (size - 1)) / 2)
 
 # === CONFIG ===
-POP_SIZE = 100
-GENERATIONS = 100
-CXPB = 0.5  # Crossover probability
-MUTPB = 0.35  # Mutation probability
+POP_SIZE = 20
+GENERATIONS = 1000
+CXPB = 0.2  # Crossover probability
+MUTPB = 0.5  # Mutation probability
 
 
 #########################################################################
 ######################## TOOLS ##########################################
 #########################################################################
 
+def move_previous_results():
+    # Get the current working directory
+    current_dir = os.getcwd()
+
+    # Find the .txt file (expecting only one)
+    txt_files = [f for f in os.listdir(current_dir) if f.endswith(".txt")]
+
+    if len(txt_files) != 1:
+        raise Exception("Expected exactly one .txt file in the directory.")
+
+    # Get the base name (without .txt extension)
+    txt_file = txt_files[0]
+    folder_name = os.path.splitext(txt_file)[0]
+    destination_path = os.path.join(current_dir, folder_name)
+
+    # Create the folder if it doesn't exist
+    os.makedirs(destination_path, exist_ok=True)
+
+    # Move the .txt file
+    shutil.move(os.path.join(current_dir, txt_file), os.path.join(destination_path, txt_file))
+    print(f"Moved {txt_file} to {folder_name}")
+
+    # Move all .png files to that folder
+    for filename in os.listdir(current_dir):
+        if filename.endswith(".png"):
+            shutil.move(os.path.join(current_dir, filename), os.path.join(destination_path, filename))
+            print(f"Moved {filename} to {folder_name}")
+def graph_gen(_vert_amount):
+    return [random.randint(0, 1) for _ in range(_vert_amount)]
+
+
+#------------------------------------------------------------------------
 def binatodeci(binary):
     number = 0
     for b in binary:
         number = (2 * number) + b
+    return number
+
+
+#------------------------------------------------------------------------
+def decitobina(decimal):
+    number = bin(decimal)[2:]
+    number = [int(d) for d in number]
     return number
 
 
@@ -60,7 +100,7 @@ def is_complete_graph(G):
 
 
 #------------------------------------------------------------------------
-def translate_vertices(randomized_vertices, vert_amount):
+def translate_vertices(randomized_vertices):
     # Here generated 0 and 1s are translated into two graphs, for now as list of edge connections.
     black_edges = []
     red_edges = []
@@ -68,7 +108,7 @@ def translate_vertices(randomized_vertices, vert_amount):
     current_node = 0
     connected_nodes = size - 1
     sub_iterator = 0
-    for i in range(0, vert_amount):
+    for i in range(0, len(randomized_vertices)):
 
         sub_iterator += 1
 
@@ -91,17 +131,27 @@ def translate_vertices(randomized_vertices, vert_amount):
 
 
 #------------------------------------------------------------------------
+# Draws a graph with highlighted small_graph - used to show the biggest clique found in big_graph.
+# If there was no smaller graph (in broader terms, argument for this number was met)
 def draw_overlay_graph(graphId, big_graph, small_graph, color):
     pos = nx.circular_layout(big_graph)
-    if color == 1:
-        nx.draw(big_graph, pos, with_labels=True, edge_color="green", node_size=500)
-        nx.draw(small_graph, pos, with_labels=True, edge_color="red", node_size=500)
+    if small_graph is not None:
+        if color == 1:
+            nx.draw(big_graph, pos, with_labels=True, edge_color="red", node_size=500)
+            nx.draw(small_graph, pos, with_labels=True, edge_color="green", node_size=500)
+        else:
+            nx.draw(big_graph, pos, with_labels=True, edge_color="black", node_size=500)
+            nx.draw(small_graph, pos, with_labels=True, edge_color="navy", node_size=500)
     else:
-        nx.draw(big_graph, pos, with_labels=True, edge_color="green", node_size=500)
-        nx.draw(small_graph, pos, with_labels=True, edge_color="black", node_size=500)
+        if color == 1:
+            nx.draw(big_graph, pos, with_labels=True, edge_color="red", node_size=500)
+        else:
+            nx.draw(big_graph, pos, with_labels=True, edge_color="black", node_size=500)
 
-    # fig = plt.gcf()
-    # fig.patch.set_facecolor('gray')
+
+
+    fig = plt.gcf()
+    fig.patch.set_facecolor('lightgray')
     # plt.figure(figsize=(8, 6), dpi=80)
     if color == 1:
         plt.savefig(f'{graphId}_red_graph.png')
@@ -111,14 +161,18 @@ def draw_overlay_graph(graphId, big_graph, small_graph, color):
 
 
 #------------------------------------------------------------------------
+# Draws both biggest cliques, red and black, on top of full graph of given size.
 def draw_final_graph(graphId, big_graph, red_graph, black_graph):
     pos = nx.circular_layout(big_graph)
 
+    #Drawing the main, full graph - the cycles will be shown on top of it
     nx.draw(big_graph, pos, with_labels=True, edge_color="green", node_size=500)
 
-    nx.draw(red_graph, pos, with_labels=True, edge_color="black", node_size=500)
+    if red_graph is not None:
+        nx.draw(red_graph, pos, with_labels=True, edge_color="black", node_size=500)
 
-    nx.draw(black_graph, pos, with_labels=True, edge_color="red", node_size=500)
+    if black_graph is not None:
+        nx.draw(black_graph, pos, with_labels=True, edge_color="red", node_size=500)
 
     # fig = plt.gcf()
     # fig.patch.set_facecolor('gray')
@@ -130,12 +184,6 @@ def draw_final_graph(graphId, big_graph, red_graph, black_graph):
 #########################################################################
 ######################## MACHINE LEARNING ###############################
 #########################################################################
-
-def graph_gen(vert_amount):
-    return [random.randint(0, 1) for _ in range(vert_amount)]
-
-
-#------------------------------------------------------------------------
 def graph_validator(tested_edges, required_size):
     score = [0.0, None]
 
@@ -143,11 +191,12 @@ def graph_validator(tested_edges, required_size):
     G.add_nodes_from((lambda i: list(range(0, i)))(size))
     G.add_edges_from(tested_edges)
 
-    subgraphs = extract_subgraphs(G, 2, size)
+    #TODO: Partition this so amount of subgraphs is set, currently memory error, there're too many
+    subgraphs = extract_subgraphs(G, required_size, size)
     # subgraphs = extract_subgraphs(G, required_size, size)
 
 
-    biggest_subgraph = nx.Graph()
+    # biggest_subgraph = nx.Graph()
     max_found_size = 0
 
     for subgraph in subgraphs:
@@ -155,14 +204,13 @@ def graph_validator(tested_edges, required_size):
             if len(subgraph) > max_found_size:
                 print(len(subgraph))
                 max_found_size = len(subgraph)
-                biggest_subgraph = subgraph
+                score[1] = subgraph
 
     if max_found_size < required_size:
         score[0] = 1.0
     else:
         score[0] = required_size/(max_found_size + 1)
 
-    score[1] = biggest_subgraph
     return score
 
 
@@ -193,7 +241,7 @@ def graph_validator_noGraph(tested_edges, required_size):
 
 #------------------------------------------------------------------------
 def fitness_fn(test_subject):
-    black_verts, red_verts = translate_vertices(test_subject, vert_amount)
+    black_verts, red_verts = translate_vertices(test_subject)
 
     # TODO : Simple foundSize/requiredSize promotes smaller requirements
     black_result = graph_validator_noGraph(black_verts, black_requirement)
@@ -204,6 +252,7 @@ def fitness_fn(test_subject):
 
 #------------------------------------------------------------------------
 def run_ga():
+    move_previous_results()
     return evolve_and_track(POP_SIZE, toolbox, cxpb=CXPB, mutpb=MUTPB, ngen=GENERATIONS)
 
 
@@ -212,6 +261,7 @@ def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
     population = toolbox.population(n=pop_size)
     current_time = datetime.now()
     alg_start_time = time.time()
+    best_fitness = 0.0
 
     current_time_str = current_time.strftime("%Y-%H-%M")
     with open(f'{current_time_str}_results.txt', 'a') as file:
@@ -219,6 +269,10 @@ def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
         fitnesses = list(map(toolbox.evaluate, population))
         for ind, fit in zip(population, fitnesses):
             ind.fitness.values = fit
+        best = tools.selBest(population, k=1)[0]
+        string_output = f"Generation 1: Best = {binatodeci(best)}, Fitness = {best.fitness.values[0]}\n"
+        print(string_output)
+        file.write(string_output)
 
 
         for gen in range(ngen):
@@ -235,7 +289,7 @@ def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
             # Selection
             population = toolbox.select(offspring, k=len(population))
 
-            # Print best of current generation
+            # Get best of current generation
             best = tools.selBest(population, k=1)[0]
 
             elapsed_time = time.time() - start_time
@@ -245,11 +299,18 @@ def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
             milliseconds = int((elapsed_time % 1) * 1000)
 
             formatted_time = f"{minutes:02}:{seconds:02}:{milliseconds:03}"
-            string_output = f"Generation {gen + 1}: Best = {binatodeci(best)}, Fitness = {best.fitness.values[0]}\nGeneration time: {formatted_time}"
+            string_output = f"Generation {gen + 1}: Best = {binatodeci(best): .5f}, Fitness = {best.fitness.values[0]}\nGeneration time: {formatted_time}"
 
-            print(string_output)
-            file.write(string_output)
+            if best.fitness.values[0] > best_fitness:
+                draw_graphs_from_index(best)
+                string_output = f"\nFitness change at generation {gen + 1} from {best_fitness: .5f} to {best.fitness.values[0]: .5f}\n{string_output}"
+                print(string_output)
+                file.write(string_output)
+                best_fitness = best.fitness.values[0]
 
+            else:
+                print(string_output)
+                file.write(string_output)
 
             if best.fitness.values[0] == 2.0:
                 elapsed_time = time.time() - alg_start_time
@@ -267,8 +328,8 @@ def evolve_and_track(pop_size, toolbox, cxpb, mutpb, ngen):
     return top_ind, toolbox.evaluate(top_ind)
 
 #------------------------------------------------------------------------
-def draw_graphs_from_index(raw_vertices, vert_amount):
-    black_edges, red_edges = translate_vertices(raw_vertices, vert_amount)
+def draw_graphs_from_index(raw_vertices):
+    black_edges, red_edges = translate_vertices(raw_vertices)
 
     if black_edges is not None and red_edges is not None:
         graphId = binatodeci(raw_vertices)
@@ -282,7 +343,11 @@ def draw_graphs_from_index(raw_vertices, vert_amount):
 
         draw_overlay_graph(graphId, black_graph, black_result[1], 0)
         draw_overlay_graph(graphId, red_graph, red_result[1], 1)
-        draw_final_graph(graphId, nx.complete_graph(size), black_result[1], red_result[1])
+
+        if black_result[1] is None and red_result[1] is None:
+            draw_final_graph(graphId, nx.complete_graph(size), black_graph, red_graph)
+        else:
+            draw_final_graph(graphId, nx.complete_graph(size), black_result[1], red_result[1])
         print("black result:", black_result[0])
         print("red result:", red_result[0])
 
@@ -290,12 +355,13 @@ def draw_graphs_from_index(raw_vertices, vert_amount):
 #------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    TEMPORARY_PRINTING_BOOLEAN = False
+    Printing_Graphs = False
+
     # 0 = black, 1 = red
-    if TEMPORARY_PRINTING_BOOLEAN:
-        raw_vertices = [1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0,
-                        0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0]
-        draw_graphs_from_index(raw_vertices, vert_amount)
+    if Printing_Graphs:
+        test = 6898044836609178785
+        raw_vertices = decitobina(test)
+        draw_graphs_from_index(raw_vertices)
 
     else:
         # === SETUP DEAP ===
@@ -320,4 +386,4 @@ if __name__ == '__main__':
 
         print("Best graph score: ", best_graph_score, "\n", "best graph index: ", best_graph)
 
-        draw_graphs_from_index(best_graph, vert_amount)
+        draw_graphs_from_index(best_graph)

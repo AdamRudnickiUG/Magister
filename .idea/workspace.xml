@@ -101,7 +101,9 @@
       <workItem from="1745413512618" duration="13776000" />
       <workItem from="1745488800014" duration="5302000" />
       <workItem from="1745512313716" duration="1072000" />
-      <workItem from="1745575478970" duration="13777000" />
+      <workItem from="1745575478970" duration="24371000" />
+      <workItem from="1745675738138" duration="603000" />
+      <workItem from="1746102333555" duration="13993000" />
     </task>
     <servers />
   </component>
@@ -113,6 +115,6 @@
     <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Magister$main.coverage" NAME="main Coverage Results" MODIFIED="1745592226426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Magister$main.coverage" NAME="main Coverage Results" MODIFIED="1746112330917" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
