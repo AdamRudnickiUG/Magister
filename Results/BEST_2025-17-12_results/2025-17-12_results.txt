@@ -1,0 +1,23 @@
+15 nodes, requirements 3 5
+
+Generation 1: Best = 7534964896050688730107773858700, Fitness = 1.510204081632653
+Generation time: 00:35:685
+Fitness change at generation 1
+
+Generation 2: Best = 23116467762019287213332027915218, Fitness = 1.6400000000000001
+Generation time: 00:45:915
+Fitness change at generation 2
+
+
+Generation 5: Best = 7534964896050688730107773891468, Fitness = 1.6944444444444446
+Generation time: 00:35:855
+Fitness change at generation 5
+
+Generation 120: Best = 7058285165673307488554517050029, Fitness = 2.0
+Generation time: 00:36:515
+Fitness change at generation 120
+
+Generation 120 achieved success.
+Best = 7058285165673307488554517050029
+Raw code: [0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1]
+Elapsed time total: 81:41:749

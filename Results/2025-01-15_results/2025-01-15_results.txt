@@ -1,0 +1,12 @@
+Algorithm progress dump
+Graph size: 10
+Red requirement:2 | BLack requirement: 10
+
+
+Fitness change at generation 1 from  0.00000 to  2.00000
+Generation 1: Best =  31818417508288.00000, Fitness = 2.0
+Generation time: 06:48:123
+Generation 1 achieved success.
+Best = 31818417508288
+Raw code: [1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
+Elapsed time total: 06:55:371

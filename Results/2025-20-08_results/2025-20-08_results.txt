@@ -1,0 +1,95 @@
+Algorithm progress dump
+Graph size: 15
+Red requirement:5 | BLack requirement: 3
+
+
+Fitness change at generation 1 from  0.00000 to  1.50000
+Generation 1: Best =  27374521534286266812165653528576.00000, Fitness = 1.5
+Generation time: 01:05:984Generation 2: Best =  28749618942303539980928922157056.00000, Fitness = 1.5
+Generation time: 00:32:933Generation 3: Best =  27374521534286271315765280899072.00000, Fitness = 1.5
+Generation time: 00:39:187Generation 4: Best =  26484043028108861561599952945152.00000, Fitness = 1.5
+Generation time: 00:42:747Generation 5: Best =  27374521534285285027446886760448.00000, Fitness = 1.5
+Generation time: 00:46:631
+Fitness change at generation 6 from  1.50000 to  1.60000
+Generation 6: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:37:064Generation 7: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:30:239Generation 8: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:36:525Generation 9: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:39:191Generation 10: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:46:859Generation 11: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:40:280Generation 12: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:37:256Generation 13: Best =  6180433701334781496078869987328.00000, Fitness = 1.6
+Generation time: 00:44:135Generation 14: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:27:199Generation 15: Best =  6200240590847620128648609136640.00000, Fitness = 1.6
+Generation time: 00:44:137Generation 16: Best =  6180433701334781496078869987328.00000, Fitness = 1.6
+Generation time: 00:44:036Generation 17: Best =  6200240817521211306391579394048.00000, Fitness = 1.6
+Generation time: 00:47:129Generation 18: Best =  6200240741963347580477255974912.00000, Fitness = 1.6
+Generation time: 00:23:478Generation 19: Best =  6200240816340619685674168090624.00000, Fitness = 1.6
+Generation time: 00:47:243Generation 20: Best =  6181671641374066876353769111552.00000, Fitness = 1.6
+Generation time: 00:26:974Generation 21: Best =  6181671641374066876353769111552.00000, Fitness = 1.6
+Generation time: 00:50:573Generation 22: Best =  6180433701334493265702718275584.00000, Fitness = 1.6
+Generation time: 00:40:472Generation 23: Best =  6180433701334772488879615246336.00000, Fitness = 1.6
+Generation time: 00:33:831Generation 24: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:40:717Generation 25: Best =  6180433701334774740679428931584.00000, Fitness = 1.6
+Generation time: 00:30:290Generation 26: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:43:880Generation 27: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:43:880Generation 28: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:20:250Generation 29: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:37:242Generation 30: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:30:345Generation 31: Best =  6180424029854428595551379390464.00000, Fitness = 1.6
+Generation time: 00:54:087Generation 32: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:33:797Generation 33: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:43:913Generation 34: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:40:558Generation 35: Best =  6239854823220479749274027950080.00000, Fitness = 1.6
+Generation time: 00:40:734Generation 36: Best =  8418619696218835879204021600256.00000, Fitness = 1.6
+Generation time: 00:30:529Generation 37: Best =  8418629292362749033096486584320.00000, Fitness = 1.6
+Generation time: 00:40:551Generation 38: Best =  8418629292362749033096486584320.00000, Fitness = 1.6
+Generation time: 00:33:908Generation 39: Best =  7507505423447556229266124308480.00000, Fitness = 1.6
+Generation time: 00:37:253Generation 40: Best =  7507505423447556229266124308480.00000, Fitness = 1.6
+Generation time: 00:44:119Generation 41: Best =  6239854823219326827769421103104.00000, Fitness = 1.6
+Generation time: 00:33:789Generation 42: Best =  8775156014229899743518930239488.00000, Fitness = 1.6
+Generation time: 00:33:878Generation 43: Best =  7507505253441786385206593191936.00000, Fitness = 1.6
+Generation time: 00:44:099Generation 44: Best =  7507505423448745179567750119424.00000, Fitness = 1.6
+Generation time: 00:37:086Generation 45: Best =  7507505423447556229266124308480.00000, Fitness = 1.6
+Generation time: 00:30:259Generation 46: Best =  6240009565723084578799176646656.00000, Fitness = 1.6
+Generation time: 00:33:630Generation 47: Best =  6319073314290140760182148300800.00000, Fitness = 1.6
+Generation time: 00:40:483Generation 48: Best =  7507505423447556229266124308480.00000, Fitness = 1.6
+Generation time: 00:44:033Generation 49: Best =  6241092763258612208044320227328.00000, Fitness = 1.6
+Generation time: 00:40:853Generation 50: Best =  6241092765619795449479142834176.00000, Fitness = 1.6
+Generation time: 00:40:830Generation 51: Best =  6246034700893469360281872236544.00000, Fitness = 1.6
+Generation time: 00:50:658Generation 52: Best =  6246034700893469360281872236544.00000, Fitness = 1.6
+Generation time: 00:34:015Generation 53: Best =  6241083091852059794610549948416.00000, Fitness = 1.6
+Generation time: 00:47:466Generation 54: Best =  6325282357336574983770858323968.00000, Fitness = 1.6
+Generation time: 00:27:311Generation 55: Best =  7508743364667433230258434736128.00000, Fitness = 1.6
+Generation time: 00:47:866Generation 56: Best =  27791143144616225412826416545792.00000, Fitness = 1.6
+Generation time: 00:34:197Generation 57: Best =  6241083075323772600967164329984.00000, Fitness = 1.6
+Generation time: 00:34:129Generation 58: Best =  7586733588323003808294490865664.00000, Fitness = 1.6
+Generation time: 00:51:434Generation 59: Best =  6246034700893469360281872236544.00000, Fitness = 1.6
+Generation time: 00:48:078Generation 60: Best =  6241083082407325702971352678400.00000, Fitness = 1.6
+Generation time: 00:37:455Generation 61: Best =  7586754140061937256990460870656.00000, Fitness = 1.6
+Generation time: 00:34:103Generation 62: Best =  7508743364662821544240007348224.00000, Fitness = 1.6
+Generation time: 00:51:378Generation 63: Best =  7586754140061937256990460870656.00000, Fitness = 1.6
+Generation time: 00:37:590Generation 64: Best =  7586744467175029128041871704064.00000, Fitness = 1.6
+Generation time: 00:37:628Generation 65: Best =  7508743364667424223059179995136.00000, Fitness = 1.6
+Generation time: 00:47:977Generation 66: Best =  7508743364667423097159273152512.00000, Fitness = 1.6
+Generation time: 00:48:053Generation 67: Best =  7586754140061360796238157447168.00000, Fitness = 1.6
+Generation time: 00:34:123Generation 68: Best =  7586744467175029128041871704064.00000, Fitness = 1.6
+Generation time: 00:44:362Generation 69: Best =  7587971528361712727817086566400.00000, Fitness = 1.6
+Generation time: 00:47:834Generation 70: Best =  7507516304660764790448327753728.00000, Fitness = 1.6
+Generation time: 00:37:660Generation 71: Best =  7508742760204513289844685799424.00000, Fitness = 1.6
+Generation time: 00:44:099Generation 72: Best =  7586754140061360796238157447168.00000, Fitness = 1.6
+Generation time: 00:40:834Generation 73: Best =  7586751722209721566979808034816.00000, Fitness = 1.6
+Generation time: 00:37:666Generation 74: Best =  7508742760204513289844685799424.00000, Fitness = 1.6
+Generation time: 00:47:789Generation 75: Best =  7586754140061360796238157447168.00000, Fitness = 1.6
+Generation time: 00:47:864Generation 76: Best =  7596654940311572910347720327168.00000, Fitness = 1.6
+Generation time: 00:40:997Generation 77: Best =  7586744467175022372642430648320.00000, Fitness = 1.6
+Generation time: 00:34:020Generation 78: Best =  7269839072152646202207122751488.00000, Fitness = 1.6
+Generation time: 00:41:095Generation 79: Best =  7586906464714632239514170425344.00000, Fitness = 1.6
+Generation time: 00:40:914Generation 80: Best =  7586744467174454919089381965824.00000, Fitness = 1.6
+Generation time: 00:37:096Generation 81: Best =  7269839072152646202207122751488.00000, Fitness = 1.6
+Generation time: 00:55:701Generation 82: Best =  7586744467174454919089381965824.00000, Fitness = 1.6
+Generation time: 00:42:767Generation 83: Best =  7269831817117397568715206164480.00000, Fitness = 1.6
+Generation time: 00:42:306Generation 84: Best =  7269839072152646202207122751488.00000, Fitness = 1.6
+Generation time: 00:45:909Generation 85: Best =  7428288142293497944692156792832.00000, Fitness = 1.6
+Generation time: 00:42:273Generation 86: Best =  7269831817117397568715206164480.00000, Fitness = 1.6
+Generation time: 00:45:756

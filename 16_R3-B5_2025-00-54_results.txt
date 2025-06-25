@@ -1,0 +1,4 @@
+Algorithm progress dump
+Graph size: 16
+Red requirement:3 | BLack requirement: 5
+

@@ -1,0 +1,8 @@
+Algorithm progress dump
+Graph size: 12
+Red requirement:3 | BLack requirement: 5
+
+
+Fitness change at generation 1 from  0.00000 to  1.50000
+Generation 1: Best =  22713606480547835904.00000, Fitness = 1.5
+Generation time: 00:02:767
